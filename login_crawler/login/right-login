@@ -1,0 +1,47 @@
+https://www.facebook.com/
+X-Xss-Protection : 0
+X-Content-Type-Options : nosniff
+Expires : Sat, 01 Jan 2000 00:00:00 GMT
+Strict-Transport-Security : max-age=15552000; preload
+Vary : Accept-Encoding
+Pragma : no-cache
+Cache-Control : private, no-cache, no-store, must-revalidate
+Date : Fri, 06 Feb 2015 10:25:04 GMT
+P3P : CP="Facebook does not have a P3P policy. Learn why here: http://fb.me/p3p"
+Content-Type : text/html; charset=utf-8
+X-Fb-Debug : RFfLU5DUfSEl16qQXNWdJY0/nV2xrKVwduHMVRJRLiLo50bGSSKKSi44wet63II3nd4LZmoeUOLn7jISE6EopQ==
+X-Frame-Options : DENY
+#newsFeedHeading
+https://www.facebook.com/?ref=logo
+https://www.facebook.com/pratik.soni.1993
+https://www.facebook.com/?ref=tn_tnmn
+#
+#
+#
+/messages/new/
+#
+#
+https://www.facebook.com/messages/
+#
+#
+/settings?tab=notifications&section=on_facebook
+https://www.facebook.com/notifications
+#
+#
+#
+#
+https://www.facebook.com/settings/?tab=privacy&privacy_source=privacy_lite
+https://www.facebook.com/about/basics/
+https://www.facebook.com/help/?ref=privacy_lite
+https://www.facebook.com/editaccount.php?ref=mb&drop
+/me/allactivity?privacy_source=activity_log&log_filter=search
+/facebook
+/campaign/landing.php?placement=pf&campaign_id=466780656697650&extra_1=auto
+/pages/create/?ref_type=sitefooter
+https://developers.facebook.com/?ref=pf
+/careers/?ref=pf
+/privacy/explanation
+/help/cookies/?ref=sitefooter
+/policies/?ref=pf
+/help/?ref=pf
+#

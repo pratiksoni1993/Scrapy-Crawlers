@@ -1,0 +1,98 @@
+import pymongo
+import os
+from scrapy.conf import settings
+from scrapy.exceptions import DropItem
+from scrapy import log
+import os
+dr = "./log/"
+import glob
+import subprocess
+base_dir = os.getcwd()
+from spiders.dmoz_spider import find_hash
+
+
+def create_file(url,i_type,i_time,i_contents):
+         #print "In create file:",i_type
+         ext = ".js" if i_type=="script" else ".html"
+         fname = "/".join(url.split('/')[2:])
+         fname,fext = os.path.splitext(fname)
+	 fext = find_hash(fext)
+	 if fext and fext[0]==".":
+		fext = fext[1:]
+
+         dname = dr+i_type+'/'+find_hash(fname)+'/' + fext +'/'
+
+	 first = 0
+         if not os.path.exists(dname):
+                os.makedirs(dname)
+		first = 1
+         
+	 prefix = "base_" if first else ""
+
+	 fname = '_'.join(i_time.split())+ext
+	 os.chdir(dname)
+
+	 f = open(prefix+fname,'w')
+         f.write(i_contents)
+         f.close()
+	
+         if not first:
+		base = glob.glob("base*")[0]
+		l = "diff -e "+base+" "+fname+" > "+"d_"+fname		
+		#print "Will execute",l
+		#print url		
+		try: 
+			os.system(l)
+		except: 
+			print "Coludnt complete", l			
+
+                os.system("rm -rf "+fname)	
+       	 os.chdir(base_dir)
+         #print "Created a file:",fname
+         return dname
+         
+class MongoDBPipeline(object):
+
+    def __init__(self):
+        connection = pymongo.Connection(
+            settings['MONGODB_SERVER'],
+            settings['MONGODB_PORT']
+        )
+        db = connection[settings['MONGODB_DB']]
+        self.collection = db[settings['MONGODB_COLLECTION']]
+    
+
+                                 
+                                 
+    def process_item(self, item, spider):
+        #print "Processing Item",item['type']
+        tmp = self.collection.find({"link":item["link"]})
+        if tmp.count():
+                        record = tmp[0]
+                        h = record['hash']
+
+                        if item['hash'] == h:
+                                 visited = tmp[0]['visited']+1
+                                 self.collection.update({"link":item["link"]},{"$set":{"visited":visited}})
+				 #print "Stable Subresource:"#,item['link']
+
+                        else:
+                                 #print "Unstable Subresource, Updating hash:",item['link']
+                                 url = item["link"]
+                                 count = tmp[0]['count']+1
+                                 visited = tmp[0]['visited']+1
+                                 create_file(url,item['type'],item['time'],item['contents'])
+                                 self.collection.update({"link":item["link"]},{"$set":{"hash":item["hash"],"time":item["time"],"count":count,"visited":visited}})
+                                 log.msg("Unstable resource, Updating hash "+url,
+                    level=log.DEBUG, spider=spider)
+                        
+        else:
+                #print "Inserting a new subresource:"#,item['link']
+                url = item["link"]
+                item['path'] = create_file(url,item['type'],item['time'],item['contents'])
+                del item['contents']
+                self.collection.insert(item)
+                log.msg("New Subresource added to MongoDB database!",
+                    level=log.DEBUG, spider=spider)
+                    
+        #return item

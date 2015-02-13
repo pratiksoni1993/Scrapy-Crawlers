@@ -1,0 +1,2 @@
+#!/bin/bash
+cat $1| openssl dgst -sha256 -binary | openssl enc -base64 -A | sed -e 's/+/-/g' -e 's/\//_/g' -e 's/=*$//g'
