@@ -12,6 +12,12 @@ BOT_NAME = 'login'
 
 SPIDER_MODULES = ['login.spiders']
 NEWSPIDER_MODULE = 'login.spiders'
-
+COOKIES_ENABLED = True
+COOKIES_DEBUG = True
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
+    #'login.middlewares.ProxyMiddleware': 100,
+    #'login.middlewares.RedirectMiddleware' : 100
+}
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'login (+http://www.yourdomain.com)'

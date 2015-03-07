@@ -2,8 +2,9 @@ from helper import *
 
 class DmozSpider(scrapy.Spider):
     name = "dmoz"
-    start_urls = [each.split()[0] for each in open("links_client.txt",'r').readlines()][:5]
-    allowed_domain = ["youtube.com","google.com"]
+    start_urls = [each.split()[0] for each in open("links_client.txt",'r').readlines()]
+    allowed_domain = [each.split()[0] for each in open("allowed_domains.txt",'r').readlines()]
+    
     def download_errback(self,e,url):
 	print "Error!",url
         
@@ -17,23 +18,22 @@ class DmozSpider(scrapy.Spider):
                 try:
                         d = get_tld(u)
                         if can_make_req(d,u):
-                                print d
+                                #print u
                                 yield scrapy.Request(u, callback=self.parse,errback = lambda x:self.download_errback(x,url))
                 except:
                         print "Error in tld", u
                                
-        #print "Dump HTML"
-        item_h = DmozItem()
-        item_h['link'] = response.url     
-        item_h['contents'] = response.body+'\n'
-        item_h['hash'] = find_hash(response.body+'\n')
-        item_h['type'] = "html"
-        item_h['time'] = ctime()
-        item_h['count'] = 1
-        item_h['path'] = ""
-        item_h['visited'] = 1
-        if item_h['hash']:
-             yield item_h
+        #item_h = DmozItem()
+        #item_h['link'] = response.url     
+        #item_h['contents'] = response.body+'\n'
+        #item_h['hash'] = find_hash(response.body+'\n')
+        #item_h['type'] = "html"
+        #item_h['time'] = ctime()
+        #item_h['count'] = 1
+        #item_h['path'] = ""
+        #item_h['visited'] = 1
+        #if item_h['hash']:
+        #     yield item_h
         
         #print "Script Collection!"
         for each in scripts:

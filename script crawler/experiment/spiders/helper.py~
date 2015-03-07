@@ -14,6 +14,7 @@ visited_urls = {}
 MAX_LINKS = 20
 
 def can_make_req(d,u):
+
         global domain, visited_urls
         
         if d not in domain.keys():

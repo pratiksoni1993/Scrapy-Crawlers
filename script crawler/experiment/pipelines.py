@@ -14,13 +14,13 @@ from spiders.dmoz_spider import find_hash
 def create_file(url,i_type,i_time,i_contents):
          #print "In create file:",i_type
          ext = ".js" if i_type=="script" else ".html"
-         fname = "/".join(url.split('/')[2:])
-         fname,fext = os.path.splitext(fname)
-	 fext = find_hash(fext)
+         #fname = "/".join(url.split('/')[2:]
+         #fname,fext = os.path.splitext(url)
+	 fext = find_hash(url)
 	 if fext and fext[0]==".":
 		fext = fext[1:]
 
-         dname = dr+i_type+'/'+find_hash(fname)+'/' + fext +'/'
+         dname = dr+i_type+'/'+ fext +'/'
 
 	 first = 0
          if not os.path.exists(dname):
@@ -74,7 +74,7 @@ class MongoDBPipeline(object):
                         if item['hash'] == h:
                                  visited = tmp[0]['visited']+1
                                  self.collection.update({"link":item["link"]},{"$set":{"visited":visited}})
-				 #print "Stable Subresource:"#,item['link']
+				 print "Stable Subresource:"#,item['link']
 
                         else:
                                  #print "Unstable Subresource, Updating hash:",item['link']
@@ -82,7 +82,7 @@ class MongoDBPipeline(object):
                                  count = tmp[0]['count']+1
                                  visited = tmp[0]['visited']+1
                                  create_file(url,item['type'],item['time'],item['contents'])
-                                 self.collection.update({"link":item["link"]},{"$set":{"hash":item["hash"],"time":item["time"],"count":count,"visited":visited}})
+                                 self.collection.update({"link":item["link"]},{"$set":{"hash":item["hash"],"time":item["time"],"count":count}})
                                  log.msg("Unstable resource, Updating hash "+url,
                     level=log.DEBUG, spider=spider)
                         
@@ -91,8 +91,8 @@ class MongoDBPipeline(object):
                 url = item["link"]
                 item['path'] = create_file(url,item['type'],item['time'],item['contents'])
                 del item['contents']
-                self.collection.insert(item)
+                self.collection.insert(dict(item))
                 log.msg("New Subresource added to MongoDB database!",
                     level=log.DEBUG, spider=spider)
                     
-        #return item
+        return item

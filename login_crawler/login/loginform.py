@@ -42,34 +42,21 @@ def _form_score(form):
 
 def _pick_form(forms):
     """Return the form most likely to be a login form"""
-    number = {}
-    i = 0
-    for each in forms:
-        number[each] = i
-        i+=1
-    f = sorted(forms, key=_form_score, reverse=True)[0]
-    return f,number[f]
+    return sorted(forms, key=_form_score, reverse=True)[0]
 
 
 def _pick_fields(form):
     """Return the most likely field names for username and password"""
     userfield = passfield = emailfield = None
     for x in form.inputs:
-        #print x
         if not isinstance(x, html.InputElement):
             continue
 
-        try:
-                type_ = x.type
-        except:
-                continue
-                        
+        type_ = x.type
         if type_ == 'password' and passfield is None:
             passfield = x.name
-            #print "Password:",passfield
         elif type_ == 'text' and userfield is None:
             userfield = x.name
-            #print "Username:",userfield
         elif type_ == 'email' and emailfield is None:
             emailfield = x.name
 
@@ -79,31 +66,20 @@ def _pick_fields(form):
 def submit_value(form):
     """Returns the value for the submit input, if any"""
     for x in form.inputs:
-                try:
-                        t = x.type
-                except:
-                        continue
-                                
-                if t == "submit" and x.name:
-                                return [(x.name, x.value)]
-                                
-                                 
-    return []
+        if x.type == "submit" and x.name:
+            return [(x.name, x.value)]
+    else:
+        return []
 
 
 def fill_login_form(url, body, username, password):
     doc = html.document_fromstring(body, base_url=url)
-    form,number = _pick_form(doc.xpath('//form'))
+    form = _pick_form(doc.xpath('//form'))
     userfield, passfield = _pick_fields(form)
     form.fields[userfield] = username
     form.fields[passfield] = password
-    try:
-        form_name = form.get('name')
-    except:
-        form_name = None
-       
     form_values = form.form_values() + submit_value(form)
-    return form_values, form.action or form.base_url, form.method, form_name, number
+    return form_values, form.action or form.base_url, form.method
 
 
 def main():
@@ -119,7 +95,7 @@ def main():
         print('requests library is required to use loginform as a tool')
 
     r = requests.get(args.url)
-    values, action, method, name = fill_login_form(args.url, r.text, args.username, args.password)
+    values, action, method = fill_login_form(args.url, r.text, args.username, args.password)
     print('url: {0}\nmethod: {1}\npayload:'.format(action, method))
     for k, v in values:
         print('- {0}: {1}'.format(k, v))

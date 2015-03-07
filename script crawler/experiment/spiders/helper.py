@@ -11,7 +11,7 @@ from tld import get_tld
 
 domain = {}
 visited_urls = {}
-MAX_LINKS = 20
+MAX_LINKS = 5000
 
 def can_make_req(d,u):
 
